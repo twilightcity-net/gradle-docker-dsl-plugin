@@ -1,24 +1,12 @@
 package org.betterdevxp.dockerdsl
 
-
+import org.betterdevxp.testkit.GradleRunnerSupport
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 
-class DockerDslPluginFunctionalSpec extends Specification {
-
-    File projectDir = new File("build/functionalTest")
-    File buildFile = new File(projectDir, "build.gradle")
-    GradleRunner runner = GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withProjectDir(projectDir)
+class DockerDslPluginFunctionalSpec extends Specification implements GradleRunnerSupport {
 
     def setup() {
-        projectDir.deleteDir()
-        projectDir.mkdirs()
-
-        new File(projectDir, "settings.gradle") << ""
         initTestContainer()
         runner.withArguments("destroyTest").build()
     }
@@ -47,13 +35,13 @@ dockerdsl {
 
     def "pull should pull the image and skip if image already pulled"() {
         when:
-        BuildResult result = runner.withArguments("pullTest").build()
+        BuildResult result = run("pullTest")
 
         then:
         assert result.output.contains("Pulling image 'alpine:latest'")
 
         when:
-        result = runner.withArguments("pullTest").build()
+        result = run("pullTest")
 
         then:
         assert result.output.contains("Task :pullTest SKIPPED")
@@ -61,16 +49,16 @@ dockerdsl {
 
     def "destroy should remove the image and skip if image does not exist"() {
         given:
-        runner.withArguments("pullTest").build()
+        run("pullTest")
 
         when:
-        BuildResult result = runner.withArguments("destroyTest").build()
+        BuildResult result = run("destroyTest")
 
         then:
         assert result.output.contains("Removing image with ID 'alpine:latest'")
 
         when:
-        result = runner.withArguments("destroyTest").build()
+        result = run("destroyTest")
 
         then:
         assert result.output.contains("Task :destroyTest SKIPPED")
@@ -78,16 +66,16 @@ dockerdsl {
 
     def "create should create the container and skip if container already exists"() {
         given:
-        runner.withArguments("pullTest").build()
+        run("pullTest")
 
         when:
-        BuildResult result = runner.withArguments("createTest").build()
+        BuildResult result = run("createTest")
 
         then:
         assert result.output.contains("Created container with ID 'test'")
 
         when:
-        result = runner.withArguments("createTest").build()
+        result = run("createTest")
 
         then:
         assert result.output.contains("Task :createTest SKIPPED")
@@ -95,16 +83,16 @@ dockerdsl {
 
     def "start should start the container and skip if container already started"() {
         given:
-        runner.withArguments("createTest").build()
+        run("createTest")
 
         when:
-        BuildResult result = runner.withArguments("startTest").build()
+        BuildResult result = run("startTest")
 
         then:
         assert result.output.contains("Starting container with ID 'test'")
 
         when:
-        result = runner.withArguments("startTest").build()
+        result = run("startTest")
 
         then:
         assert result.output.contains("Task :startTest SKIPPED")
@@ -112,16 +100,16 @@ dockerdsl {
 
     def "stop should stop the container and skip if container not started"() {
         given:
-        runner.withArguments("startTest").build()
+        run("startTest")
 
         when:
-        BuildResult result = runner.withArguments("stopTest").build()
+        BuildResult result = run("stopTest")
 
         then:
         assert result.output.contains("Stopping container with ID 'test'")
 
         when:
-        result = runner.withArguments("stopTest").build()
+        result = run("stopTest")
 
         then:
         assert result.output.contains("Task :stopTest SKIPPED")
@@ -129,16 +117,16 @@ dockerdsl {
 
     def "remove should remove the container and skip if container does not exist"() {
         given:
-        runner.withArguments("createTest").build()
+        run("createTest")
 
         when:
-        BuildResult result = runner.withArguments("removeTest").build()
+        BuildResult result = run("removeTest")
 
         then:
         assert result.output.contains("Removing container with ID 'test'")
 
         when:
-        result = runner.withArguments("removeTest").build()
+        result = run("removeTest")
 
         then:
         assert result.output.contains("Task :removeTest SKIPPED")
@@ -157,7 +145,7 @@ dockerdsl {
 """)
 
         when:
-        BuildResult result = runner.withArguments("startTest").buildAndFail()
+        BuildResult result = runAndFail("startTest")
 
         then:
         assert result.output.contains('starting container process caused: exec: \\"thisshouldfail\\"')
@@ -188,7 +176,7 @@ stopTest.doLast {
 """)
 
         when:
-        runner.withArguments("startTest", "stopTest").build()
+        run("startTest", "stopTest")
 
         then:
         notThrown(Exception)

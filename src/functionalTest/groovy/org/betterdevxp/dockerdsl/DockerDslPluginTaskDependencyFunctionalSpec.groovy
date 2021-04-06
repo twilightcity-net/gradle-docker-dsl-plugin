@@ -1,24 +1,14 @@
 package org.betterdevxp.dockerdsl
 
-
+import org.betterdevxp.testkit.GradleRunnerSupport
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 
-class DockerDslPluginTaskDependencyFunctionalSpec extends Specification {
-
-    File projectDir = new File("build/functionalTest")
-    GradleRunner runner = GradleRunner.create()
-            .forwardOutput()
-            .withPluginClasspath()
-            .withProjectDir(projectDir)
+class DockerDslPluginTaskDependencyFunctionalSpec extends Specification implements GradleRunnerSupport {
 
     def setup() {
-        projectDir.deleteDir()
-        projectDir.mkdirs()
-
-        new File(projectDir, "settings.gradle") << ""
-        new File(projectDir, "build.gradle") << """
+        buildFile.text = """
 plugins {
     id('org.betterdevxp.dockerdsl')
 }
@@ -33,15 +23,15 @@ dockerdsl {
 }            
 """
 
-        runner.withArguments("destroyTest").build()
+        run("destroyTest")
     }
 
     def "destroy should stop and remove running container"() {
         given:
-        runner.withArguments("startTest").build()
+        run("startTest")
 
         when:
-        BuildResult result = runner.withArguments("destroyTest").build()
+        BuildResult result = run("destroyTest")
 
         then:
         assert result.output.contains("Stopping container with ID 'test'")
@@ -51,7 +41,7 @@ dockerdsl {
 
     def "create should pull the image if not pulled"() {
         when:
-        BuildResult result = runner.withArguments("createTest").build()
+        BuildResult result = run("createTest")
 
         then:
         assert result.output.contains("Pulling image 'alpine:latest'")
@@ -60,7 +50,7 @@ dockerdsl {
 
     def "start should pull and create container if image not pulled"() {
         when:
-        BuildResult result = runner.withArguments("startTest").build()
+        BuildResult result = run("startTest")
 
         then:
         assert result.output.contains("Pulling image 'alpine:latest'")
@@ -70,10 +60,10 @@ dockerdsl {
 
     def "remove should stop started container if running"() {
         given:
-        runner.withArguments("startTest").build()
+        run("startTest")
 
         when:
-        BuildResult result = runner.withArguments("removeTest").build()
+        BuildResult result = run("removeTest")
 
         then:
         assert result.output.contains("Stopping container with ID 'test'")
