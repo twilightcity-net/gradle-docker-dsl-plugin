@@ -1,5 +1,6 @@
 package org.betterdevxp.dockerdsl
 
+
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
@@ -65,12 +66,35 @@ dockerdsl {
         assert result.output.contains("Task :destroyTest SKIPPED")
     }
 
-    def "create should create the container and skip if container already exists"() {
+    def "destroy should remove created container"() {
+        given:
+        runner.withArguments("pullTest", "createTest")
+
+        when:
+        BuildResult result = runner.withArguments("destroyTest").build()
         
+        then:
+        assert false
     }
 
-    def "start should start the container skip if container already started"() {
+    def "create should create the container and skip if container already exists"() {
+        given:
+        runner.withArguments("destroyTest", "pullTest").build()
 
+        when:
+        BuildResult result = runner.withArguments("createTest").build()
+
+        then:
+        assert result.output.contains("Created container with ID 'test'")
+
+        when:
+        result = runner.withArguments("createTest").build()
+
+        then:
+        assert result.output.contains("Task :createTest SKIPPED")
+    }
+
+    def "start should start the container and skip if container already started"() {
     }
 
     def "start should pull and create container if image not pulled"() {

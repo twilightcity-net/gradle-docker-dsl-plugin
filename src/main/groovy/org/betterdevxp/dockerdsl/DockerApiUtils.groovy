@@ -1,6 +1,7 @@
 package org.betterdevxp.dockerdsl
 
 import com.github.dockerjava.api.DockerClient
+import com.github.dockerjava.api.model.Container
 import com.github.dockerjava.api.model.Image
 
 class DockerApiUtils {
@@ -16,8 +17,17 @@ class DockerApiUtils {
         findImage(client, imageName) != null
     }
 
-    String getImageId(DockerClient client, String imageName) {
-        findImage(client, imageName)?.id
+    private Container findContainer(DockerClient client, String containerName) {
+        List<Container> containers = client.listContainersCmd()
+                .withShowAll(true)
+                .exec()
+        containers.find {
+            it.names.contains("/${containerName}")
+        }
+    }
+
+    boolean isContainerCreated(DockerClient client, String containerName) {
+        findContainer(client, containerName) != null
     }
 
 }

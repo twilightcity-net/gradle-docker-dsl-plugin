@@ -75,6 +75,12 @@ class DockerRemoteTaskFactory {
     private DockerCreateContainer createCreateContainerTask() {
         String taskName = getTaskName("create")
         project.tasks.create(taskName, DockerCreateContainer) {
+            imageId.set(config.imageName)
+            containerName.set(config.name)
+
+            onlyIf {
+                apiUtils.isContainerCreated(dockerClient, config.name) == false
+            }
         }
     }
 
