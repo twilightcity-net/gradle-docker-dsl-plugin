@@ -30,4 +30,10 @@ class DockerApiUtils {
         findContainer(client, containerName) != null
     }
 
+    boolean isContainerRunning(DockerClient client, String containerName) {
+        Container container = findContainer(client, containerName)
+        // TODO: are there any other states we should care about?  is there an enum that encompasses the states?
+        container?.state == "running"
+    }
+
 }

@@ -5,6 +5,8 @@ class ContainerConfig {
     String name
     String displayName
     String imageName
+    Integer stopWaitTime
+    Iterable<String> args
     private List<String> options = []
 
     void name(String name) {
@@ -17,6 +19,14 @@ class ContainerConfig {
 
     void imageName(String imageName) {
         this.imageName = imageName
+    }
+
+    void stopWaitTime(Integer stopWaitTime) {
+        this.stopWaitTime = stopWaitTime
+    }
+
+    void args(String ... args) {
+        this.args = args as List
     }
 
     String getDisplayName() {

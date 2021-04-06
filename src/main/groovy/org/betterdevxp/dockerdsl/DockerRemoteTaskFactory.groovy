@@ -44,6 +44,9 @@ class DockerRemoteTaskFactory {
     private void setTaskDependencies() {
         createContainerTask.dependsOn(pullImageTask)
         startContainerTask.dependsOn(createContainerTask)
+
+        removeContainerTask.dependsOn(stopContainerTask)
+        removeImageTask.dependsOn(removeContainerTask)
     }
 
     private String getTaskName(String taskType) {
@@ -77,6 +80,9 @@ class DockerRemoteTaskFactory {
         project.tasks.create(taskName, DockerCreateContainer) {
             imageId.set(config.imageName)
             containerName.set(config.name)
+            if (config.args != null) {
+                cmd.set(config.args)
+            }
 
             onlyIf {
                 apiUtils.isContainerCreated(dockerClient, config.name) == false
@@ -87,18 +93,34 @@ class DockerRemoteTaskFactory {
     private DockerStartContainer createStartContainerTask() {
         String taskName = getTaskName("start")
         project.tasks.create(taskName, DockerStartContainer) {
+            containerId.set(config.name)
+
+            onlyIf {
+                apiUtils.isContainerRunning(dockerClient, config.name) == false
+            }
         }
     }
 
     private DockerStopContainer createStopContainerTask() {
         String taskName = getTaskName("stop")
         project.tasks.create(taskName, DockerStopContainer) {
+            containerId.set(config.name)
+            waitTime.set(config.stopWaitTime)
+
+            onlyIf {
+                apiUtils.isContainerRunning(dockerClient, config.name)
+            }
         }
     }
 
     private DockerRemoveContainer createRemoveContainerTask() {
         String taskName = getTaskName("remove")
         project.tasks.create(taskName, DockerRemoveContainer) {
+            containerId.set(config.name)
+
+            onlyIf {
+                apiUtils.isContainerCreated(dockerClient, config.name)
+            }
         }
     }
 

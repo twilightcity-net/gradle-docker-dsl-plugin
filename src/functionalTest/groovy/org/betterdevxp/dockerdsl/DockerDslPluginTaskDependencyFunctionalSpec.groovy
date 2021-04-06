@@ -27,6 +27,8 @@ dockerdsl {
     container {
         name "test"
         imageName "alpine:latest"
+        args "sleep", "10"
+        stopWaitTime 1
     }
 }            
 """
@@ -49,7 +51,7 @@ dockerdsl {
 
     def "create should pull the image if not pulled"() {
         when:
-        BuildResult result = runner.withArguments("removeTest").build()
+        BuildResult result = runner.withArguments("createTest").build()
 
         then:
         assert result.output.contains("Pulling image 'alpine:latest'")
