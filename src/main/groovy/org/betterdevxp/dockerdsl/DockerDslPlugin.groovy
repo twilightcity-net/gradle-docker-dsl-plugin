@@ -11,7 +11,7 @@ class DockerDslPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.plugins.apply(DockerRemoteApiPlugin)
-        project.extensions.create(DockerDslExtension.NAME, DockerDslExtension)
+        project.extensions.create(DockerDslExtension.NAME, DockerDslExtension, project)
     }
 
 }
