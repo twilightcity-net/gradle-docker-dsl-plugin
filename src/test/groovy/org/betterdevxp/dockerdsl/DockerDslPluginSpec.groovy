@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-class DockerDslPluginTest extends Specification {
+class DockerDslPluginSpec extends Specification {
 
     def "should create container lifecycle tasks"() {
         given:

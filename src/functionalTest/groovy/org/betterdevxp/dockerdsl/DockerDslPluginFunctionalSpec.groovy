@@ -5,7 +5,7 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 
-class DockerDslPluginFunctionalTest extends Specification {
+class DockerDslPluginFunctionalSpec extends Specification {
 
     File projectDir = new File("build/functionalTest")
     GradleRunner runner = GradleRunner.create()
