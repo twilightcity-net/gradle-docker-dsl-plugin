@@ -30,12 +30,11 @@ dockerdsl {
     }
 }            
 """
+
+        runner.withArguments("destroyTest").build()
     }
 
     def "pull should pull the image and skip if image already pulled"() {
-        given:
-        runner.withArguments("destroyTest").build()
-
         when:
         BuildResult result = runner.withArguments("pullTest").build()
 
@@ -66,20 +65,9 @@ dockerdsl {
         assert result.output.contains("Task :destroyTest SKIPPED")
     }
 
-    def "destroy should remove created container"() {
-        given:
-        runner.withArguments("pullTest", "createTest")
-
-        when:
-        BuildResult result = runner.withArguments("destroyTest").build()
-        
-        then:
-        assert false
-    }
-
     def "create should create the container and skip if container already exists"() {
         given:
-        runner.withArguments("destroyTest", "pullTest").build()
+        runner.withArguments("pullTest").build()
 
         when:
         BuildResult result = runner.withArguments("createTest").build()
@@ -95,17 +83,54 @@ dockerdsl {
     }
 
     def "start should start the container and skip if container already started"() {
-    }
+        given:
+        runner.withArguments("createTest").build()
 
-    def "start should pull and create container if image not pulled"() {
+        when:
+        BuildResult result = runner.withArguments("startTest").build()
+
+        then:
+        assert result.output.contains("Starting container with ID 'test'")
+
+        when:
+        result = runner.withArguments("startTest").build()
+
+        then:
+        assert result.output.contains("Task :startTest SKIPPED")
     }
 
     def "stop should stop the container and skip if container not started"() {
+        given:
+        runner.withArguments("startTest").build()
 
+        when:
+        BuildResult result = runner.withArguments("stopTest").build()
+
+        then:
+        assert result.output.contains("Stopping container with ID 'test'")
+
+        when:
+        result = runner.withArguments("stopTest").build()
+
+        then:
+        assert result.output.contains("Task :stopTest SKIPPED")
     }
 
     def "remove should remove the container and skip if container does not exist"() {
+        given:
+        runner.withArguments("createTest").build()
 
+        when:
+        BuildResult result = runner.withArguments("removeTest").build()
+
+        then:
+        assert result.output.contains("Removing container with ID 'test'")
+
+        when:
+        result = runner.withArguments("removeTest").build()
+
+        then:
+        assert result.output.contains("Task :removeTest SKIPPED")
     }
 
 }
