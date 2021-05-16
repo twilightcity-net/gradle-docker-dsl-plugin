@@ -1,28 +1,12 @@
 package org.betterdevxp.dockerdsl
 
-import org.betterdevxp.testkit.GradleRunnerSupport
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 
-class DockerDslPluginTaskDependencyFunctionalSpec extends Specification implements GradleRunnerSupport {
+class DockerDslPluginTaskDependencyFunctionalSpec extends Specification implements DockerDslPluginSupport {
 
     def setup() {
-        buildFile.text = """
-plugins {
-    id('org.betterdevxp.dockerdsl')
-}
-
-dockerdsl {            
-    container {
-        name "test"
-        imageName "alpine:latest"
-        args "sleep", "10"
-        stopWaitTime 1
-    }
-}            
-"""
-
+        initTestContainer()
         run("destroyTest")
     }
 
