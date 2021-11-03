@@ -15,9 +15,9 @@ class DockerDslPluginSpec extends Specification {
         project.extensions.findByType(DockerDslExtension).container {
             name "postgres"
             imageName "postgres:latest"
-            publish "5432:5432"
-            env "POSTGRES_USER=postgres"
-            env "POSTGRES_PASSWORD=postgres"
+            portBinding "5432:5432"
+            envVar "POSTGRES_USER=postgres"
+            envVar "POSTGRES_PASSWORD=postgres"
         }
 
         then:
