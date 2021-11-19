@@ -138,4 +138,27 @@ task logTest(type: DockerLogsContainer) {
         assert result.output.contains("KEY4=value4")
     }
 
+    def "should add task descriptions"() {
+        given:
+        initTestContainer("""
+dockerdsl {
+    container {
+        name "test"
+        imageName "alpine:latest"
+    }
+}
+""")
+
+        when:
+        BuildResult result = run("task")
+        
+        then:
+        assert result.output.contains("pullTest - Pull the test image")
+        assert result.output.contains("destroyTest - Destroy the test image")
+        assert result.output.contains("createTest - Create the test container")
+        assert result.output.contains("startTest - Start the test container")
+        assert result.output.contains("stopTest - Stop the test container")
+        assert result.output.contains("removeTest - Remove the test container")
+    }
+
 }
