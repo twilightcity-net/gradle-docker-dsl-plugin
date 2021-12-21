@@ -1,7 +1,9 @@
 plugins {
+    id "idea"
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.16.0'
 }
 
 repositories {
@@ -13,6 +15,12 @@ dependencies {
     implementation 'com.bmuschko:gradle-docker-plugin:6.7.0'
 
     testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+}
+
+pluginBundle {
+    website = 'https://github.com/betterdevxp/gradle-docker-dsl-plugin'
+    vcsUrl = 'https://github.com/betterdevxp/gradle-docker-dsl-plugin.git'
+    tags = ['gradle', 'docker', 'testing']
 }
 
 gradlePlugin {
