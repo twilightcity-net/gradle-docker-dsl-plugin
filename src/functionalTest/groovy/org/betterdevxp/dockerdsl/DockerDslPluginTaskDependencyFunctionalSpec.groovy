@@ -54,4 +54,18 @@ class DockerDslPluginTaskDependencyFunctionalSpec extends Specification implemen
         assert result.output.contains("Removing container with ID 'test'")
     }
 
+    def "refresh should remove and start container"() {
+        given:
+        run("startTest")
+        
+        when:
+        BuildResult result = run("refreshTest")
+
+        then:
+        assert result.output.contains("Stopping container with ID 'test'")
+        assert result.output.contains("Removing container with ID 'test'")
+        assert result.output.contains("Created container with ID 'test'")
+        assert result.output.contains("Starting container with ID 'test'")
+    }
+
 }

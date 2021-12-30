@@ -24,6 +24,7 @@ class DockerTaskConfigurator {
     private TaskProvider<DockerStartContainer> startContainerTaskProvider
     private TaskProvider<DockerStopContainer> stopContainerTaskProvider
     private TaskProvider<DockerRemoveContainer> removeContainerTaskProvider
+    private TaskProvider<Task> refreshContainerTaskProvider
 
     DockerTaskConfigurator(Project project, ContainerConfig config) {
         this.project = project
@@ -43,21 +44,28 @@ class DockerTaskConfigurator {
         registerStartContainerTask()
         registerStopContainerTask()
         registerRemoveContainerTask()
+        registerRefreshContainerTask()
     }
 
     private void configureDependencies() {
         createContainerTaskProvider.configure {
             dependsOn(pullImageTaskProvider)
+            mustRunAfter(removeContainerTaskProvider)
         }
         startContainerTaskProvider.configure {
             dependsOn(createContainerTaskProvider)
+            mustRunAfter(stopContainerTaskProvider)
+            mustRunAfter(removeContainerTaskProvider)
         }
-
         removeContainerTaskProvider.configure {
             dependsOn(stopContainerTaskProvider)
         }
         destroyImageTaskProvider.configure {
             dependsOn(removeContainerTaskProvider)
+        }
+        refreshContainerTaskProvider.configure {
+            dependsOn(removeContainerTaskProvider)
+            dependsOn(startContainerTaskProvider)
         }
     }
 
@@ -153,6 +161,10 @@ class DockerTaskConfigurator {
                 apiUtils.isContainerCreated(dockerClient, config.name)
             }
         }
+    }
+
+    private void registerRefreshContainerTask() {
+        refreshContainerTaskProvider = registerContainerTask("refresh", Task)
     }
 
 }
