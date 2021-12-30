@@ -81,7 +81,6 @@ createTest.exposePorts('tcp', [9124, 9126])
 
 task inspectTest(type: DockerInspectContainer) {
     dependsOn startTest
-    finalizedBy stopTest
 
     targetContainerId startTest.getContainerId()
 
@@ -94,7 +93,7 @@ task inspectTest(type: DockerInspectContainer) {
 ''')
 
         when:
-        BuildResult result = run("inspectTest")
+        BuildResult result = run("inspectTest", "stopTest")
 
         then:
         assert result.output.contains("PortBinding: 9124 -> 9123")
@@ -120,7 +119,6 @@ dockerdsl {
 
 task logTest(type: DockerLogsContainer) {
     dependsOn startTest
-    finalizedBy stopTest
 
     targetContainerId startTest.getContainerId()
     follow = true
@@ -129,7 +127,7 @@ task logTest(type: DockerLogsContainer) {
 ''')
 
         when:
-        BuildResult result = run("logTest")
+        BuildResult result = run("logTest", "stopTest")
 
         then:
         assert result.output.contains("KEY1=value1")
