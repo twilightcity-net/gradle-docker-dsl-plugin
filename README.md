@@ -5,8 +5,8 @@ Gradle plugin for managing Docker containers, specifically in the context of the
 
 This plugin provides a handy DSL for the excellent [gradle-docker-plugin](https://github.com/bmuschko/gradle-docker-plugin).  
 The primary use case is to facilitate testing, either local or as part of a CI build.  Given a container definition, 
-the following gradle tasks are dynamically created to pull the image, create the container, start the container, 
-stop the container, remove the container, and destroy the image.
+gradle tasks are dynamically created to pull the image, create the container, start the container, stop the container, 
+remove the container, and destroy the image.
 
 For example, given the following container definition...
 ```gradle

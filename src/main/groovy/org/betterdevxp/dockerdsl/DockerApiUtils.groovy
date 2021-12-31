@@ -6,18 +6,18 @@ import com.github.dockerjava.api.model.Image
 
 class DockerApiUtils {
 
-    private Image findImage(DockerClient client, String imageName) {
+    private static Image findImage(DockerClient client, String imageName) {
         List<Image> images = client.listImagesCmd().exec()
         images.find {
             it.repoTags?.contains(imageName)
         }
     }
 
-    boolean isImageLocal(DockerClient client, String imageName) {
+    static boolean isImageLocal(DockerClient client, String imageName) {
         findImage(client, imageName) != null
     }
 
-    private Container findContainer(DockerClient client, String containerName) {
+    private static Container findContainer(DockerClient client, String containerName) {
         List<Container> containers = client.listContainersCmd()
                 .withShowAll(true)
                 .exec()
@@ -26,11 +26,11 @@ class DockerApiUtils {
         }
     }
 
-    boolean isContainerCreated(DockerClient client, String containerName) {
+    static boolean isContainerCreated(DockerClient client, String containerName) {
         findContainer(client, containerName) != null
     }
 
-    boolean isContainerRunning(DockerClient client, String containerName) {
+    static boolean isContainerRunning(DockerClient client, String containerName) {
         Container container = findContainer(client, containerName)
         // TODO: are there any other states we should care about?  is there an enum that encompasses the states?
         container?.state == "running"

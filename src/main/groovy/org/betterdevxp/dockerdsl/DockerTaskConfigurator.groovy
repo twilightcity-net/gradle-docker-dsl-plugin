@@ -16,7 +16,6 @@ class DockerTaskConfigurator {
 
     private Project project
     private ContainerConfig config
-    private DockerApiUtils apiUtils
 
     private TaskProvider<DockerPullImage> pullImageTaskProvider
     private TaskProvider<DockerRemoveImage> destroyImageTaskProvider
@@ -29,7 +28,6 @@ class DockerTaskConfigurator {
     DockerTaskConfigurator(Project project, ContainerConfig config) {
         this.project = project
         this.config = config
-        this.apiUtils = new DockerApiUtils()
     }
 
     void registerTasksAndConfigureDependencies() {
@@ -92,7 +90,7 @@ class DockerTaskConfigurator {
             image.set(config.imageName)
 
             onlyIf {
-                apiUtils.isImageLocal(dockerClient, config.imageName) == false
+                DockerApiUtils.isImageLocal(dockerClient, config.imageName) == false
             }
         }
     }
@@ -103,7 +101,7 @@ class DockerTaskConfigurator {
             imageId.set(config.imageName)
 
             onlyIf {
-                apiUtils.isImageLocal(dockerClient, config.imageName)
+                DockerApiUtils.isImageLocal(dockerClient, config.imageName)
             }
         }
     }
@@ -124,7 +122,7 @@ class DockerTaskConfigurator {
             }
 
             onlyIf {
-                apiUtils.isContainerCreated(dockerClient, config.name) == false
+                DockerApiUtils.isContainerCreated(dockerClient, config.name) == false
             }
         }
     }
@@ -135,7 +133,7 @@ class DockerTaskConfigurator {
             containerId.set(config.name)
 
             onlyIf {
-                apiUtils.isContainerRunning(dockerClient, config.name) == false
+                DockerApiUtils.isContainerRunning(dockerClient, config.name) == false
             }
         }
     }
@@ -147,7 +145,7 @@ class DockerTaskConfigurator {
             waitTime.set(config.stopWaitTime)
 
             onlyIf {
-                apiUtils.isContainerRunning(dockerClient, config.name)
+                DockerApiUtils.isContainerRunning(dockerClient, config.name)
             }
         }
     }
@@ -158,7 +156,7 @@ class DockerTaskConfigurator {
             containerId.set(config.name)
 
             onlyIf {
-                apiUtils.isContainerCreated(dockerClient, config.name)
+                DockerApiUtils.isContainerCreated(dockerClient, config.name)
             }
         }
     }

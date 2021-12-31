@@ -6,11 +6,9 @@ import org.gradle.api.Project
 
 class DockerDslPlugin implements Plugin<Project> {
 
-    static final String NAME = "org.betterdevxp.dockerdsl"
-
     @Override
     void apply(Project project) {
-        project.plugins.apply(DockerRemoteApiPlugin)
+        project.pluginManager.apply(DockerRemoteApiPlugin)
         project.extensions.create(DockerDslExtension.NAME, DockerDslExtension, project)
     }
 

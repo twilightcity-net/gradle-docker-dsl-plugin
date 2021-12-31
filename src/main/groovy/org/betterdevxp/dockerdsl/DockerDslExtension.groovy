@@ -1,7 +1,6 @@
 package org.betterdevxp.dockerdsl
 
 import org.gradle.api.Project
-import org.gradle.util.ConfigureUtil
 
 class DockerDslExtension {
 
@@ -15,7 +14,7 @@ class DockerDslExtension {
 
     void container(Closure closure) {
         ContainerConfig container = new ContainerConfig()
-        ConfigureUtil.configure(closure, container)
+        project.configure(container, closure)
         new DockerTaskConfigurator(project, container).registerTasksAndConfigureDependencies()
     }
 

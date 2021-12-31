@@ -11,7 +11,7 @@ class DockerDslPluginSpec extends Specification {
         Project project = ProjectBuilder.builder().build()
 
         when:
-        project.plugins.apply(DockerDslPlugin.NAME)
+        project.pluginManager.apply(DockerDslPlugin)
         project.extensions.findByType(DockerDslExtension).container {
             name "postgres"
             imageName "postgres:latest"
