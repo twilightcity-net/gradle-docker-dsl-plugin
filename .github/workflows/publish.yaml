@@ -24,4 +24,4 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |-
           ./gradlew publishPluginMavenPublicationToMavenRepository \
-            -Dnexus.url="$NEXUS_URL" -Dnexus.username="$NEXUS_USERNAME" -Dnexus.password="$NEXUS_PASSWORD"
+            -Pnexus.url="$NEXUS_URL" -Pnexus.username="$NEXUS_USERNAME" -Pnexus.password="$NEXUS_PASSWORD"
