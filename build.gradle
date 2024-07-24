@@ -3,7 +3,6 @@ plugins {
     id "java-gradle-plugin"
     id "idea"
     id 'maven-publish'
-    id "com.gradle.plugin-publish" version "0.16.0"
 }
 
 repositories {
@@ -17,23 +16,32 @@ dependencies {
     testImplementation "org.spockframework:spock-core:1.3-groovy-2.5"
 }
 
+java {
+    withSourcesJar()
+}
+
 String pluginDescription = "Gradle plugin for managing Docker containers, specifically in the context of the local and CI build/test lifecycle.  " +
         "This plugin provides a handy DSL for the excellent https://github.com/bmuschko/gradle-docker-plugin."
-
-pluginBundle {
-    website = 'https://github.com/betterdevxp/gradle-docker-dsl-plugin'
-    vcsUrl = 'https://github.com/betterdevxp/gradle-docker-dsl-plugin.git'
-    tags = ['gradle', 'docker', 'testing']
-    description = pluginDescription
-}
 
 gradlePlugin {
     plugins {
         dockerDsl {
-            id = 'org.betterdevxp.docker-dsl'
+            id = 'net.twilightcity.docker-dsl'
             displayName = "Docker DSL"
             description = pluginDescription
             implementationClass = 'org.betterdevxp.dockerdsl.DockerDslPlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url "${findProperty('nexus.url')}/repository/twilightcity"
+            credentials {
+                username findProperty('nexus.username')
+                password findProperty('nexus.password')
+            }
         }
     }
 }
