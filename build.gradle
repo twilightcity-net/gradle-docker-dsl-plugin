@@ -37,9 +37,9 @@ gradlePlugin {
 publishing {
     repositories {
         maven {
-            url "${findProperty('nexus.url')}/repository/twilightcity"
+            url "http://nexus.twilightcity.net:8081/repository/public"
             credentials {
-                username findProperty('nexus.username')
+                username "ci"
                 password findProperty('nexus.password')
             }
         }
