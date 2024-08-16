@@ -33,10 +33,11 @@ gradlePlugin {
 publishing {
     repositories {
         maven {
-            url "http://nexus.twilightcity.net:8081/repository/public"
+            url = "http://nexus.twilightcity.net:8081/repository/public"
+            allowInsecureProtocol = true
             credentials {
-                username "ci"
-                password findProperty('nexus.password')
+                username = "ci"
+                password = findProperty('nexus.password')
             }
         }
     }
