@@ -1,59 +1,109 @@
 [![main Actions Status](https://github.com/betterdevxp/gradle-docker-dsl-plugin/workflows/gradle-build/badge.svg)](https://github.com/betterdevxp/gradle-docker-dsl-plugin/actions)
 
-# gradle-docker-dsl-plugin
+# Gradle Docker DSL Plugin
 
-Gradle plugin for managing Docker containers, specifically in the context of the local and CI build/test lifecycle.
+A Gradle plugin that provides a convenient Domain-Specific Language (DSL) for managing Docker containers in your build and test lifecycle. This plugin is part of the Twilight City ecosystem and embodies the testing best practices promoted by the Twilight City community. It builds upon the excellent [gradle-docker-plugin](https://github.com/bmuschko/gradle-docker-plugin) to provide a more intuitive and streamlined interface for container management.
 
-This plugin provides a handy DSL for the excellent [gradle-docker-plugin](https://github.com/bmuschko/gradle-docker-plugin).  
-The primary use case is to facilitate testing, either local or as part of a CI build.  As such, the tasks are oriented
-around pulling images and container lifecycle rather than building and pushing images.
+## Overview
 
-### Installation
+The Gradle Docker DSL Plugin is designed to simplify Docker container management in your Gradle builds, particularly for testing scenarios. It provides a declarative way to define and manage Docker containers, automatically handling the complete container lifecycle from pulling images to cleanup. The plugin is specifically tailored to support modern testing practices, making it easier to create isolated, reproducible test environments that can be seamlessly integrated into both local development and CI/CD pipelines.
 
-Apply the plugin using standard gradle convention
+### Key Features
 
+- Simple, declarative DSL for container configuration
+- Automatic task generation for container lifecycle management
+- Smart task dependencies that only execute when needed
+- Support for multiple containers with bulk operations
+- Built on top of the battle-tested gradle-docker-plugin
+- Comprehensive test coverage with both unit and functional tests
+
+## Installation
+
+Add the plugin to your `build.gradle` file:
+
+```gradle
 plugins {
-    id ("org.betterdevxp.dockerdsl") version "0.1.0"
+    id 'net.twilightcity.docker-dsl' version '0.2.0'
 }
+```
 
-### Usage
+## Usage
 
-Given a container definition, gradle tasks are dynamically created to pull the image, create the container, start the 
-container, stop the container, remove the container, and destroy the image.
+### Basic Container Configuration
 
-For example, given the following container definition...
+Define your containers using the `dockerdsl` block:
+
 ```gradle
 dockerdsl {
     container {
         name "postgres"
         imageName "postgres:9.4"
-        publish "5432:5432"
-        env "POSTGRES_USER=postgres"
-        env "POSTGRES_PASSWORD=postgres"
+        portBinding "5432:5432"
+        envVar "POSTGRES_USER=postgres"
+        envVar "POSTGRES_PASSWORD=postgres"
     }
 }
 ```
 
-The following tasks will be created:
+### Available Container Configuration Options
 
-* pullPostgres - pulls the postgres image
-* createPostgres - creates the postgres container, depends on pullPostgres
-* startPostgres - starts the postgres container, depends on createPostgres
-* stopPostgres - stops the postgres container
-* removePostgres - removes the postgres container, depends on stopPostgres
-* destroyPostgres - destroys the postgres container, depends on removePostgres
+- `name`: Container name (required)
+- `imageName`: Docker image name and tag (required)
+- `portBinding`: Port mappings (host:container)
+- `envVar`: Environment variables
+- `args`: Container command arguments
+- `stopWaitTime`: Time to wait for container to stop (in seconds)
 
-Task dependencies are defined such that any prerequisite tasks are executed.  In addition, a task will only execute
-if it needs to in order to fulfill its function.  For example, if the task `startPostgres` is executed but the 
-image has not been pulled, the following tasks will be executed - `pullPostgres`, `createPostgres`, `startPostgres`.
-If the `startPostgres` is executed again, nothing will happen since the container is already started.
+### Generated Tasks
 
-#### Bulk tasks
+For each container definition, the plugin automatically creates the following tasks:
 
-If more than one container is defined per project, the following additional tasks will be created.
+- `pull{ContainerName}`: Pulls the Docker image
+- `create{ContainerName}`: Creates the container
+- `start{ContainerName}`: Starts the container
+- `stop{ContainerName}`: Stops the container
+- `remove{ContainerName}`: Removes the container
+- `destroy{ContainerName}`: Removes the Docker image
 
-* startAllContainers
-* stopAllContainers
-* removeAllContainers
-* refreshAllContainers
-* destroyAllImages
+### Bulk Operations
+
+When multiple containers are defined, additional bulk operation tasks are created:
+
+- `startAllContainers`
+- `stopAllContainers`
+- `removeAllContainers`
+- `refreshAllContainers`
+- `destroyAllImages`
+
+### Task Dependencies
+
+Tasks are automatically configured with appropriate dependencies. For example:
+- `create` depends on `pull`
+- `start` depends on `create`
+- `remove` depends on `stop`
+- `destroy` depends on `remove`
+
+Tasks are also smart about their execution - they will only run if their action is needed. For example, if you run `startPostgres` but the image hasn't been pulled yet, it will automatically execute `pullPostgres` and `createPostgres` first.
+
+## Development
+
+### Building the Plugin
+
+```bash
+./gradlew build
+```
+
+### Running Tests
+
+```bash
+./gradlew test
+./gradlew functionalTest
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+We welcome contributions to the Gradle Docker DSL Plugin! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started, our development process, and how to submit pull requests.
